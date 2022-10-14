@@ -2,6 +2,9 @@ package dev.luzifer.ui;
 
 import dev.luzifer.ui.component.CheckBoxLabelComponent;
 import dev.luzifer.ui.component.SliderLabelComponent;
+import dev.luzifer.ui.view.ViewController;
+import dev.luzifer.ui.view.viewmodel.ToolBoxViewModel;
+import dev.luzifer.ui.view.views.ToolBoxView;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -51,7 +54,11 @@ public class AppStarter extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
+    
+        ViewController viewController = new ViewController();
+        // viewController.showView(new ToolBoxView(new ToolBoxViewModel()));
         
+        // TODO: Make this stuff below a View
         loadImagePaths();
         
         stage.setIconified(false);
