@@ -54,12 +54,22 @@ public class Main {
         File updater = new File(APPDATA_FOLDER, "updater.jar");
         
         if(Updater.isUpdateAvailable(Updater.getCurrentVersion(), Updater.VERSION_URL)) {
-            try {
-                Runtime.getRuntime().exec("java -jar " + updater.getAbsolutePath() + " -spickerLocation=" + jarPath.getAbsolutePath());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            
+            int result = JOptionPane.showConfirmDialog(
+                    null,
+                    "Do you want to update?",
+                    Updater.getCurrentVersion() + " -> " + Updater.getRemoteVersion(),
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.YES_NO_OPTION);
+            
+            if(result == JOptionPane.YES_OPTION) {
+    
+                try {
+                    Runtime.getRuntime().exec("java -jar " + updater.getAbsolutePath() + " -spickerLocation=" + jarPath.getAbsolutePath());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                System.exit(0);
             }
-            System.exit(0);
         }
     }
 }

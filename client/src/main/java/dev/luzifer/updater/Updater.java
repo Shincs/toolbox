@@ -55,6 +55,10 @@ public class Updater {
         return readLineFromInputStream(getInputStream("version.txt"));
     }
     
+    public static String getRemoteVersion() {
+        return readLineFromInputStream(getInputStream(VERSION_URL));
+    }
+    
     private static InputStream getInputStream(String fileName) {
         
         InputStream resource = Updater.class.getResourceAsStream("/" + fileName);
