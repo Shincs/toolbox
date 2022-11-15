@@ -16,6 +16,8 @@ public class ChatServer {
     private static final int PORT = 8000;
     
     public void start() {
+        
+        System.out.println("Starting server...");
     
         try(ServerSocket serverSocket = new ServerSocket(PORT)) {
             
@@ -24,14 +26,20 @@ public class ChatServer {
                 Socket client = serverSocket.accept();
                 CLIENTS.add(client);
                 
+                System.out.println("Client connected: " + client.getInetAddress().getHostAddress());
+                
                 new Thread(() -> {
                     try {
                         while(true) {
+                            
                             byte[] buffer = new byte[1024];
                             int read = client.getInputStream().read(buffer);
                             
                             if(read == -1) {
+                                
                                 CLIENTS.remove(client);
+                                System.out.println("Client died: " + client.getInetAddress().getHostAddress());
+                                
                                 break;
                             }
                             
@@ -41,6 +49,9 @@ public class ChatServer {
                                 
                                 CLIENTS.forEach(c -> {
                                     if(!isAlive(c)) {
+                                        
+                                        System.out.println("Client died - no heartbeat: " + c.getInetAddress().getHostAddress());
+                                        
                                         CLIENTS.remove(c);
                                         try {
                                             c.close();
@@ -69,7 +80,6 @@ public class ChatServer {
                     }
                 }).start();
             }
-            
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

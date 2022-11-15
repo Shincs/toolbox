@@ -50,7 +50,8 @@ public class ChatController {
     public static void chat(String message) {
         if(isConnected()) {
             try {
-                socket.getOutputStream().write((uuid.toString() + ": " + message).getBytes());
+                String shortenedUUID = uuid.toString().substring(0, 5);
+                socket.getOutputStream().write((shortenedUUID + ": " + message).getBytes());
             } catch (Exception e) {
                 e.printStackTrace();
             }
