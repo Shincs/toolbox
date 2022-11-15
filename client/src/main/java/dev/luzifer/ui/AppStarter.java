@@ -1,10 +1,9 @@
 package dev.luzifer.ui;
 
+import dev.luzifer.ui.chat.ChatView;
 import dev.luzifer.ui.component.CheckBoxLabelComponent;
 import dev.luzifer.ui.component.SliderLabelComponent;
-import dev.luzifer.ui.view.ViewController;
-import dev.luzifer.ui.view.viewmodel.ToolBoxViewModel;
-import dev.luzifer.ui.view.views.ToolBoxView;
+import dev.luzifer.ui.util.ImageUtil;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -26,6 +25,8 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -55,23 +56,37 @@ public class AppStarter extends Application {
     @Override
     public void start(Stage stage) throws Exception {
     
-        ViewController viewController = new ViewController();
-        // viewController.showView(new ToolBoxView(new ToolBoxViewModel()));
-        
-        // TODO: Make this stuff below a View
         loadImagePaths();
+        
+        Platform.setImplicitExit(false);
         
         stage.setIconified(false);
         stage.initStyle(StageStyle.UTILITY);
     
-        Tab tab1 = new Tab();
-        Tab tab2 = new Tab();
+        Tab tab1 = new Tab("1mAg3 SvviTcH3r");
+        tab1.setGraphic(ImageUtil.getImageView("pin_icon.png", ImageUtil.ImageResolution.OKAY));
+        tab1.setClosable(false);
+        Tab tab2 = new Tab("G00gl3");
+        tab2.setGraphic(ImageUtil.getImageView("pin_icon.png", ImageUtil.ImageResolution.OKAY));
+        tab2.setClosable(false);
+        Tab chatTab = new Tab("Ch4t");
+        chatTab.setGraphic(ImageUtil.getImageView("pin_icon.png", ImageUtil.ImageResolution.OKAY));
+        chatTab.setClosable(false);
         Tab tab3 = new Tab("Settings");
-        TabPane tabPane = new TabPane(tab1, tab2, tab3);
-        tabPane.setPrefSize(300, 300);
+        tab3.setGraphic(ImageUtil.getImageView("pin_icon.png", ImageUtil.ImageResolution.OKAY));
+        tab3.setClosable(false);
+        Tab tabOpener = new Tab("+");
+        tabOpener.setClosable(false);
+        TabPane tabPane = new TabPane(tab1, tab2, chatTab, tab3, tabOpener);
+        tabPane.setPrefSize(500, 500);
         
         ImageView imageView = new ImageView();
         ScrollPane scrollPane = new ScrollPane(imageView);
+        
+        imageView.setOnZoom(e -> {
+            imageView.setFitWidth(imageView.getFitWidth() * e.getZoomFactor());
+            imageView.setFitHeight(imageView.getFitHeight() * e.getZoomFactor());
+        });
         
         tabPane.setOnMouseClicked(event -> {
             if(event.getButton() == MouseButton.PRIMARY)
@@ -123,6 +138,8 @@ public class AppStarter extends Application {
         VBox vBox = new VBox(imageSwitchSlider, frameOpacitySlider, switchImages);
         tab3.setContent(vBox);
         
+        chatTab.setContent(new ChatView());
+        
         imageChangeProperty.bindBidirectional(imageSwitchSlider.getSlider().valueProperty());
         frameOpacityProperty.bindBidirectional(frameOpacitySlider.getSlider().valueProperty());
         switchImagesProperty.bindBidirectional(switchImages.getCheckBox().selectedProperty());
@@ -167,6 +184,57 @@ public class AppStarter extends Application {
         });
         thread.setDaemon(true);
         thread.start();
+    
+        stage.setOnCloseRequest(windowEvent -> {
+        
+            if(!SystemTray.isSupported()) {
+                System.out.println("SystemTray is not supported");
+                return;
+            }
+        
+            final PopupMenu popup = new PopupMenu();
+            final TrayIcon trayIcon;
+            java.awt.Image image = new ImageIcon(AppStarter.class.getResource("/icon.png")).getImage();
+            trayIcon = new TrayIcon(image, "oohhh baby a tripleeee");
+            trayIcon.setImageAutoSize(true);
+            final SystemTray tray = SystemTray.getSystemTray();
+        
+            // Create a pop-up menu components
+            MenuItem oeffnenItem = new MenuItem("Öffnen");
+            MenuItem exitItem = new MenuItem("Exit");
+        
+            //Add components to pop-up menu
+            popup.add(oeffnenItem);
+            popup.addSeparator();
+            popup.add(exitItem);
+        
+            trayIcon.addActionListener(event -> {
+                Platform.runLater(() -> {
+                    tray.remove(trayIcon);
+                    stage.show();
+                });
+            });
+            
+            trayIcon.setPopupMenu(popup);
+        
+            try {
+                tray.add(trayIcon);
+            } catch (AWTException e) {
+                System.out.println("TrayIcon could not be added.");
+            }
+        
+            exitItem.addActionListener(e -> {
+                System.out.println("Exiting...");
+                System.exit(0);
+            });
+            
+            oeffnenItem.addActionListener(e -> {
+                Platform.runLater(() -> {
+                    tray.remove(trayIcon);
+                    stage.show();
+                });
+            });
+        });
     }
     
     private void addImagePath(String path) {
