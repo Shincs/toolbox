@@ -37,8 +37,8 @@ public class ChatController {
             try {
                 socket.close();
                 socket = null;
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ignored) {
+                // we dont care
             }
         }
     }
@@ -52,8 +52,8 @@ public class ChatController {
             try {
                 String shortenedUUID = uuid.toString().substring(0, 5);
                 socket.getOutputStream().write((shortenedUUID + ": " + message).getBytes());
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ignored) {
+                isAlive = false;
             }
         }
     }
@@ -80,8 +80,8 @@ public class ChatController {
                         if(callback != null)
                             callback.accept(message);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException ignored) {
+                    isAlive = false;
                 }
             }
         });
@@ -94,9 +94,8 @@ public class ChatController {
                 try {
                     socket.getOutputStream().write(0);
                     Thread.sleep(1000);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                     isAlive = false;
-                    e.printStackTrace();
                 }
             }
         });

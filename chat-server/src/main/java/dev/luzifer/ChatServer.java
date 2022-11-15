@@ -75,12 +75,11 @@ public class ChatServer {
                                 }
                             });
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    } catch (IOException ignored) {}
                 }).start();
             }
         } catch (IOException e) {
+            System.out.println("Server crashed.. Printing stacktrace:");
             throw new RuntimeException(e);
         }
         
