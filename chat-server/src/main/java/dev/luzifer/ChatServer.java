@@ -1,5 +1,8 @@
 package dev.luzifer;
 
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,6 +23,8 @@ public class ChatServer {
         System.out.println("Starting server...");
     
         try(ServerSocket serverSocket = new ServerSocket(PORT)) {
+            
+            System.out.println("Server started on port " + PORT);
             
             while(true) {
                 
