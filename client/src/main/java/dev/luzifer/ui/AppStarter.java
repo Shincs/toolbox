@@ -4,6 +4,7 @@ import dev.luzifer.ui.chat.ChatView;
 import dev.luzifer.ui.component.CheckBoxLabelComponent;
 import dev.luzifer.ui.component.SliderLabelComponent;
 import dev.luzifer.ui.util.ImageUtil;
+import dev.luzifer.updater.Updater;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -60,6 +61,7 @@ public class AppStarter extends Application {
         
         Platform.setImplicitExit(false);
         
+        stage.setTitle("w0rd.3xe v" + Updater.getCurrentVersion());
         stage.setIconified(false);
         stage.initStyle(StageStyle.UTILITY);
     
