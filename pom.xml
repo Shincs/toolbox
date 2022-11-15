@@ -11,7 +11,9 @@
 
     <modules>
         <module>client</module>
+        <module>updater</module>
         <module>chat-server</module>
+        <module>updater</module>
     </modules>
 
 </project>

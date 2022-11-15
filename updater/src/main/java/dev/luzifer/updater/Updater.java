@@ -10,8 +10,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 public class Updater {
     
@@ -25,31 +23,6 @@ public class Updater {
             FileUtils.copyURLToFile(downloadFrom, target);
         } catch (IOException ignored) {
         }
-    }
-    
-    public static boolean isUpdateAvailable(File toUpdate, String versionUrl) {
-        
-        if(!toUpdate.exists())
-            return true;
-        
-        try (ZipFile zipFile = new ZipFile(toUpdate)) {
-            ZipEntry versionEntry = zipFile.getEntry("version.txt");
-            if(versionEntry == null)
-                return true;
-            
-            String version = readLineFromInputStream(zipFile.getInputStream(versionEntry));
-            return isUpdateAvailable(version, versionUrl);
-        } catch (IOException ignored) {
-        }
-        return true;
-    }
-    
-    public static boolean isUpdateAvailable(String version, String versionUrl) {
-        
-        UpdateChecker updateChecker = new UpdateChecker(versionUrl);
-        updateChecker.checkUpdate(version);
-        
-        return updateChecker.isUpdateAvailable();
     }
     
     public static String getCurrentVersion() {

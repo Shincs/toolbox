@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 
 public class Main {
     
@@ -21,40 +20,29 @@ public class Main {
     }
     
     public static void main(String[] args) {
-        
-        cleanupIfHadUpdate();
+    
+        installUpdater();
         updateIfNeeded();
 
         Application.launch(AppStarter.class, args);
     }
     
-    private static void cleanupIfHadUpdate() {
+    private static void installUpdater() {
     
-        File jarPath = null;
-        try {
-            jarPath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        File updater = new File(APPDATA_FOLDER, "updater.jar");
+        if(!updater.exists()) {
+            try {
+                updater.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            Updater.update(updater, Updater.UPDATER_DOWNLOAD_URL);
         }
-    
-        File oldJar = new File(jarPath.getParentFile(), "spicker_old.jar");
-        if(oldJar.exists())
-            oldJar.delete();
     }
     
     private static void updateIfNeeded() {
-    
-        File jarPath = null;
-        try {
-            jarPath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
         
         if(Updater.isUpdateAvailable(Updater.getCurrentVersion(), Updater.VERSION_URL)) {
-            
-            if(jarPath.getName().equals("spicker.jar"))
-                jarPath.renameTo(new File(jarPath.getParentFile(), "spicker_old.jar"));
             
             int result = JOptionPane.showOptionDialog(null,
                     "Es ist ein Update verfügbar. Möchtest du es jetzt installieren?",
@@ -67,11 +55,17 @@ public class Main {
             
             if(result == JOptionPane.YES_OPTION) {
                 
-                File spicker = new File(jarPath.getParent(), "spicker.jar");
-                Updater.update(spicker, Updater.DOWNLOAD_URL);
+                File thisJar = null;
+                try {
+                    thisJar = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+                
+                File updater = new File(APPDATA_FOLDER, "updater.jar");
                 
                 try {
-                    Runtime.getRuntime().exec("java -jar " + spicker.getAbsolutePath());
+                    Runtime.getRuntime().exec("java -jar " + updater.getAbsolutePath() + " -spickerLocation=" + thisJar.getAbsolutePath());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
