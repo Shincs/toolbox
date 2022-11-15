@@ -23,6 +23,7 @@ public class ChatServer {
         
         Thread clientHandler = new Thread(() -> {
             while(true) {
+                
                 for(Socket client : CLIENTS) {
                     try {
                         if(client.getInputStream().available() > 0) {
@@ -32,13 +33,18 @@ public class ChatServer {
                             String message = new String(buffer);
                             System.out.println("Received message: " + message);
                             
-                            for(Socket otherClient : CLIENTS) {
+                            for(Socket otherClient : CLIENTS)
                                 otherClient.getOutputStream().write(message.getBytes());
-                            }
                         }
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
+                }
+                
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
             }
         });
@@ -48,7 +54,11 @@ public class ChatServer {
         while(true) {
             try {
                 Socket socket = serverSocket.accept();
-                CLIENTS.add(socket);
+                System.out.println("New client connected: " + socket.getInetAddress().getHostAddress());
+                
+                synchronized (CLIENTS) {
+                    CLIENTS.add(socket);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

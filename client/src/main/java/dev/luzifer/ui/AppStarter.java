@@ -1,5 +1,6 @@
 package dev.luzifer.ui;
 
+import dev.luzifer.Main;
 import dev.luzifer.ui.chat.ChatView;
 import dev.luzifer.ui.component.CheckBoxLabelComponent;
 import dev.luzifer.ui.component.SliderLabelComponent;
@@ -38,14 +39,8 @@ import java.util.List;
 
 public class AppStarter extends Application {
     
-    private static final File APPDATA_FOLDER =
-            new File(System.getenv("APPDATA") + File.separator + "wkjsdbashdu" + File.separator);
-    private static final File IMAGE_PATH_STORAGE = new File(APPDATA_FOLDER, "image_paths.txt");
-    
-    static {
-        if (!APPDATA_FOLDER.exists())
-            APPDATA_FOLDER.mkdirs();
-    }
+    private static final File IMAGE_PATH_STORAGE =
+            new File(Main.APPDATA_FOLDER, "image_paths.txt");
     
     private final List<String> picturePaths = new ArrayList<>();
     

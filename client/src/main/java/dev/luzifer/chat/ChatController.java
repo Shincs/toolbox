@@ -47,7 +47,7 @@ public class ChatController {
     }
     
     public static void chat(String message) {
-        
+    
         if(socket != null) {
             try {
                 socket.getOutputStream().write((uuid.toString() + ": " + message).getBytes());
