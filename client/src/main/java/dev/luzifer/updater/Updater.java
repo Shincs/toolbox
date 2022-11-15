@@ -16,7 +16,6 @@ import java.util.zip.ZipFile;
 public class Updater {
     
     public static final String DOWNLOAD_URL = "https://github.com/Shincs/toolbox/releases/download/latest/spicker.jar";
-    public static final String UPDATER_DOWNLOAD_URL = "https://github.com/Shincs/toolbox/releases/download/latest/updater.jar";
     public static final String VERSION_URL = "https://raw.githubusercontent.com/Shincs/toolbox/stage/client/src/main/resources/version.txt";
     
     public static void update(File target, String downloadUrl) {

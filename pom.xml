@@ -11,7 +11,6 @@
 
     <modules>
         <module>client</module>
-        <module>client-updater</module>
         <module>chat-server</module>
     </modules>
 
