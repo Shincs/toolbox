@@ -8,6 +8,7 @@ import javafx.application.Application;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class Main {
     
@@ -49,12 +50,17 @@ public class Main {
     
     private static void updateIfNeeded() {
     
-        File currentJar = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        File jarPath = null;
+        try {
+            jarPath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
         File updater = new File(APPDATA_FOLDER, "updater.jar");
         
         if(Updater.isUpdateAvailable(Updater.getCurrentVersion(), Updater.VERSION_URL)) {
             try {
-                Runtime.getRuntime().exec("java -jar " + updater.getAbsolutePath() + " -spickerLocation=" + currentJar.getAbsolutePath());
+                Runtime.getRuntime().exec("java -jar " + updater.getAbsolutePath() + " -spickerLocation=" + jarPath.getAbsolutePath());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
