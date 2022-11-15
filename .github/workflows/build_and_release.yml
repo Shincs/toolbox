@@ -39,19 +39,11 @@ jobs:
       - name: Build Application
         run: |
           mvn -U -V -e -B -ntp clean install compile package -pl client -amd -DskipTests
-      - name: Build Updater
-        run: |
-          mvn -U -V -e -B -ntp clean install compile package -pl client-updater -amd -DskipTests
       - name: Upload Application
         uses: actions/upload-artifact@v3
         with:
           name: spicker
           path: D:\a\toolbox\toolbox\client\target\spicker.jar
-      - name: Upload Updater
-        uses: actions/upload-artifact@v3
-        with:
-          name: updater
-          path: D:\a\toolbox\toolbox\client-updater\target\updater.jar
 
   pre-release:
     name: Pre Release
@@ -63,11 +55,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: spicker
-
-      - name: Download Updater
-        uses: actions/download-artifact@v3
-        with:
-          name: updater
 
       - name: Release
         uses: "marvinpinto/action-automatic-releases@latest"
