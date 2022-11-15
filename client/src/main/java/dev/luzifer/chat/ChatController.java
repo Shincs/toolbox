@@ -3,6 +3,7 @@ package dev.luzifer.chat;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class ChatController {
@@ -12,34 +13,33 @@ public class ChatController {
     private static Socket socket;
     private static Consumer<String> callback;
     
-    public static void connect(String host, int port) {
-        
-        if(socket == null) {
-            
+    private static volatile boolean isAlive = false;
+    
+    public static CompletableFuture<Boolean> connect(String host, int port) {
+        return CompletableFuture.supplyAsync(() -> {
             try {
+                
                 socket = new Socket(host, port);
-                socket.getOutputStream().write(uuid.toString().getBytes());
-            } catch (Exception e) {
-                e.printStackTrace();
+                isAlive = true;
+                
+                startMessageReceiver();
+                startHeartBeat();
+                
+                return true;
+            } catch (IOException e) {
+                return false;
             }
-            
-            startMessageReceiver();
-        } else {
-            System.out.println("Already connected!");
-        }
+        });
     }
     
     public static void disconnect() {
-        
-        if(socket != null) {
+        if(isConnected()) {
             try {
                 socket.close();
                 socket = null;
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            System.out.println("Not connected!");
         }
     }
     
@@ -48,46 +48,58 @@ public class ChatController {
     }
     
     public static void chat(String message) {
-    
-        if(socket != null) {
+        if(isConnected()) {
             try {
                 socket.getOutputStream().write((uuid.toString() + ": " + message).getBytes());
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            System.out.println("Not connected!");
         }
     }
     
+    public static boolean isInitialized() {
+        return socket != null;
+    }
+    
     public static boolean isConnected() {
-        try {
-            return socket != null && socket.getInputStream().read() != -1;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return isAlive;
     }
     
     private static void startMessageReceiver() {
         Thread receiver = new Thread(() -> {
-            while(socket != null && socket.isConnected()) {
+            while(isAlive) {
                 try {
-                    byte[] buffer = new byte[1024];
-                    int read = socket.getInputStream().read(buffer);
-                    
-                    if(read > 0) {
-                        String message = new String(buffer, 0, read);
-                        if(callback != null) {
+                    if(socket.getInputStream().available() > 0) {
+                        byte[] buffer = new byte[socket.getInputStream().available()];
+                        socket.getInputStream().read(buffer);
+                        
+                        String message = new String(buffer);
+                        System.out.println("Received message: " + message);
+                        
+                        if(callback != null)
                             callback.accept(message);
-                        }
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
-        receiver.setDaemon(true);
         receiver.start();
+    }
+    
+    private static void startHeartBeat() {
+        Thread heartBeat = new Thread(() -> {
+            while(isAlive) {
+                try {
+                    socket.getOutputStream().write(0);
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    isAlive = false;
+                    e.printStackTrace();
+                }
+            }
+        });
+        heartBeat.start();
     }
     
 }
