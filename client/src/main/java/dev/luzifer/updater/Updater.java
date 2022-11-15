@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
@@ -16,7 +17,7 @@ public class Updater {
     
     public static final String DOWNLOAD_URL = "https://github.com/Shincs/toolbox/releases/download/latest/spicker.jar";
     public static final String UPDATER_DOWNLOAD_URL = "https://github.com/Shincs/toolbox/releases/download/latest/updater.jar";
-    public static final String VERSION_URL = "https://raw.githubusercontent.com/Shincs/toolbox/master/client/src/main/resources/version.txt";
+    public static final String VERSION_URL = "https://raw.githubusercontent.com/Shincs/toolbox/stage/client/src/main/resources/version.txt";
     
     public static void update(File target, String downloadUrl) {
         try {
@@ -56,7 +57,16 @@ public class Updater {
     }
     
     public static String getRemoteVersion() {
-        return readLineFromInputStream(getInputStream(VERSION_URL));
+    
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(VERSION_URL).openConnection();
+            connection.connect();
+    
+            return readLineFromInputStream(connection.getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     private static InputStream getInputStream(String fileName) {

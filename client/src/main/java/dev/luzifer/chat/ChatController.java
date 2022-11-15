@@ -1,5 +1,6 @@
 package dev.luzifer.chat;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -60,7 +61,11 @@ public class ChatController {
     }
     
     public static boolean isConnected() {
-        return socket != null;
+        try {
+            return socket != null && socket.getInputStream().read() != -1;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     private static void startMessageReceiver() {

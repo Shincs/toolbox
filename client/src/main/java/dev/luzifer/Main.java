@@ -1,6 +1,5 @@
 package dev.luzifer;
 
-import dev.luzifer.chat.ChatController;
 import dev.luzifer.ui.AppStarter;
 import dev.luzifer.updater.Updater;
 import javafx.application.Application;
@@ -55,11 +54,14 @@ public class Main {
         
         if(Updater.isUpdateAvailable(Updater.getCurrentVersion(), Updater.VERSION_URL)) {
             
-            int result = JOptionPane.showConfirmDialog(
+            int result = JOptionPane.showOptionDialog(null,
+                    "Es ist ein Update verfügbar. Möchtest du es jetzt installieren?",
+                    "Update verfügbar - " + Updater.getCurrentVersion() + " -> " + Updater.getRemoteVersion(),
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
                     null,
-                    "Do you want to update?",
-                    Updater.getCurrentVersion() + " -> " + Updater.getRemoteVersion(),
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.YES_NO_OPTION);
+                    new String[]{"Ja", "Nein"},
+                    "Ja");
             
             if(result == JOptionPane.YES_OPTION) {
     
