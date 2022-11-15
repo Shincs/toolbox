@@ -24,13 +24,7 @@ public class Main {
         
         doesUpdaterExist();
         updateIfNeeded();
-        
-        JOptionPane pane = new JOptionPane();
-        
-        String ip = pane.showInputDialog("Server IP:");
-        int port = Integer.parseInt(pane.showInputDialog("Server Port:"));
-        
-        ChatController.connect(ip, port);
+
         Application.launch(AppStarter.class, args);
     }
     

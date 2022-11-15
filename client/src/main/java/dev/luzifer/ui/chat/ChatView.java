@@ -7,6 +7,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+import javax.swing.*;
+
 public class ChatView extends VBox {
 
     private final TextArea textArea = new TextArea();
@@ -20,6 +22,17 @@ public class ChatView extends VBox {
         textField.setPromptText("Enter message...");
         textField.setOnKeyPressed(event -> {
             if(event.getCode().getName().equals("Enter")) {
+                
+                if(!ChatController.isConnected()) {
+                    
+                    JOptionPane pane = new JOptionPane();
+    
+                    String ip = pane.showInputDialog("Server IP:");
+                    int port = Integer.parseInt(pane.showInputDialog("Server Port:"));
+    
+                    ChatController.connect(ip, port);
+                }
+                
                 ChatController.chat(textField.getText());
                 textField.clear();
             }

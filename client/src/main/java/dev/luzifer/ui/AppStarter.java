@@ -1,6 +1,8 @@
 package dev.luzifer.ui;
 
+import com.google.gson.Gson;
 import dev.luzifer.Main;
+import dev.luzifer.settings.Settings;
 import dev.luzifer.ui.chat.ChatView;
 import dev.luzifer.ui.component.CheckBoxLabelComponent;
 import dev.luzifer.ui.component.SliderLabelComponent;
@@ -29,8 +31,10 @@ import javafx.stage.StageStyle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -49,10 +53,13 @@ public class AppStarter extends Application {
     private final DoubleProperty frameOpacityProperty = new SimpleDoubleProperty(0.15);
     private final BooleanProperty switchImagesProperty = new SimpleBooleanProperty(true);
     
+    private Settings settings;
+    
     @Override
     public void start(Stage stage) throws Exception {
     
         loadImagePaths();
+        settings = loadSettings();
         
         Platform.setImplicitExit(false);
         
@@ -87,7 +94,7 @@ public class AppStarter extends Application {
         
         tabPane.setOnMouseClicked(event -> {
             if(event.getButton() == MouseButton.PRIMARY)
-                stage.setOpacity(frameOpacityProperty.get());
+                stage.setOpacity(settings.getOpacity());
             else
                 stage.setOpacity(0.005);
         });
@@ -129,10 +136,18 @@ public class AppStarter extends Application {
         
         tab1.setContent(scrollPane);
     
-        SliderLabelComponent imageSwitchSlider = new SliderLabelComponent("Picture Switch", 1, 60, 5);
-        SliderLabelComponent frameOpacitySlider = new SliderLabelComponent("Frame Opacity", 0.01, 1, 0.15);
-        CheckBoxLabelComponent switchImages = new CheckBoxLabelComponent("Auto-Switch Images", true);
-        VBox vBox = new VBox(imageSwitchSlider, frameOpacitySlider, switchImages);
+        SliderLabelComponent imageSwitchSlider = new SliderLabelComponent("Picture Switch", 1, 60, settings.getImageSwitchInterval());
+        SliderLabelComponent frameOpacitySlider = new SliderLabelComponent("Frame Opacity", 0.01, 1, settings.getOpacity());
+        CheckBoxLabelComponent switchImages = new CheckBoxLabelComponent("Auto-Switch Images", settings.isSwitchImages());
+        javafx.scene.control.Button saveButton = new javafx.scene.control.Button("Save");
+        saveButton.setOnAction(event -> {
+            
+            settings = Settings.of(frameOpacitySlider.getSlider().getValue(), (int) imageSwitchSlider.getSlider().getValue(), switchImages.getCheckBox().isSelected());
+            stage.setOpacity(settings.getOpacity());
+            
+            saveSettings();
+        });
+        VBox vBox = new VBox(imageSwitchSlider, frameOpacitySlider, switchImages, saveButton);
         tab3.setContent(vBox);
         
         chatTab.setContent(new ChatView());
@@ -149,7 +164,7 @@ public class AppStarter extends Application {
         stage.setScene(new Scene(tabPane));
         
         stage.setAlwaysOnTop(true);
-        stage.setOpacity(frameOpacityProperty.get());
+        stage.setOpacity(settings.getOpacity());
         stage.show();
         
         Thread thread = new Thread(() -> {
@@ -157,12 +172,12 @@ public class AppStarter extends Application {
             while (true) {
                 
                 try {
-                    Thread.sleep(1000L * imageChangeProperty.get());
+                    Thread.sleep(1000L * settings.getImageSwitchInterval());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 
-                if(switchImagesProperty.get()) {
+                if(settings.isSwitchImages()) {
                     
                     Platform.runLater(() -> {
                         if(!picturePaths.isEmpty()) {
@@ -271,6 +286,44 @@ public class AppStarter extends Application {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+    
+    private Settings loadSettings() {
+        
+        File settingsFile = new File(Main.APPDATA_FOLDER, "settings.json");
+        if(!settingsFile.exists()) {
+            
+            settings = Settings.DEFAULT_SETTINGS;
+            saveSettings();
+            
+            return settings;
+        }
+        
+        try(BufferedReader reader = new BufferedReader(new FileReader(settingsFile))) {
+            settings = new Gson().fromJson(reader, Settings.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return settings;
+    }
+    
+    private void saveSettings() {
+        
+        File settingsFile = new File(Main.APPDATA_FOLDER, "settings.json");
+        if(!settingsFile.exists()) {
+            try {
+                settingsFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(settingsFile))) {
+            writer.write(new Gson().toJson(settings));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
