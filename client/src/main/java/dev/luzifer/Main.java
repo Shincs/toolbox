@@ -44,7 +44,7 @@ public class Main {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            Updater.update(updater, Updater.DOWNLOAD_URL);
+            Updater.update(updater, Updater.UPDATER_DOWNLOAD_URL);
         }
     }
     
@@ -56,6 +56,7 @@ public class Main {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+        
         File updater = new File(APPDATA_FOLDER, "updater.jar");
         
         if(Updater.isUpdateAvailable(Updater.getCurrentVersion(), Updater.VERSION_URL)) {
