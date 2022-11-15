@@ -30,13 +30,13 @@ public class ChatView extends VBox {
                     String ip = pane.showInputDialog("Server IP:");
                     int port = Integer.parseInt(pane.showInputDialog("Server Port:"));
     
-                    textArea.appendText("Connecting to " + ip + ":" + port + "...");
+                    textArea.appendText("\nConnecting to " + ip + ":" + port + "...");
                     ChatController.connect(ip, port);
                     
                     if(ChatController.isConnected()) {
-                        textArea.appendText("Connected!");
+                        textArea.appendText("\nConnected!");
                     } else {
-                        textArea.appendText("Failed to connect!");
+                        textArea.appendText("\nFailed to connect!");
                     }
                 }
                 
