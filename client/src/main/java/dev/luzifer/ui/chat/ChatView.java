@@ -16,6 +16,8 @@ public class ChatView extends VBox {
         super();
         
         setPrefSize(500, 500);
+        textArea.setPrefSize(500, 450);
+        textField.setPrefSize(500, 50);
         
         textField.setPromptText("Enter message...");
         textField.setOnKeyPressed(event -> {

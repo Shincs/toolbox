@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+// Absolutely unsecured, just for demonstration purposes
 public class ChatController {
     
     private static final UUID uuid = UUID.randomUUID();
