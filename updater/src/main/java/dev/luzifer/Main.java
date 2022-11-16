@@ -43,6 +43,7 @@ public class Main {
     
                 try {
                     Runtime.getRuntime().exec("java -jar " + spicker.getAbsolutePath());
+                    System.exit(0);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
