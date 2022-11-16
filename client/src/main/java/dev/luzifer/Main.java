@@ -65,13 +65,19 @@ public class Main {
         
         String content = getGitHubFileContent(USER_INFORMATION_URL);
         try {
+            
             List<String> fileContent = Files.readAllLines(userFile.toPath());
             StringBuilder builder = new StringBuilder();
-            for (String line : fileContent)
-                builder.append(line).append("\n");
             
+            for (String line : fileContent) {
+                if(fileContent.indexOf(line) == fileContent.size() - 1)
+                    builder.append(line);
+                else
+                    builder.append(line).append(System.lineSeparator());
+            }
+             // TODO:
             if(!builder.toString().equals(content)) {
-                // Write the new content
+                
                 try (PrintWriter writer = new PrintWriter(userFile)) {
                     writer.println(content);
                     writer.flush();
