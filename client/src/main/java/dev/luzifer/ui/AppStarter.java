@@ -125,6 +125,10 @@ public class AppStarter extends Application {
         });
     
         javafx.scene.control.ScrollPane scrollPane = new javafx.scene.control.ScrollPane(imageView);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setFitToWidth(true);
+        imageView.fitHeightProperty().bind(tabPane.heightProperty());
+        imageView.fitWidthProperty().bind(tabPane.widthProperty());
         scrollPane.setOnKeyPressed(event -> {
             if(event.getCode().isArrowKey()) {
                 if(event.getCode().getName().equals("Right")) {
