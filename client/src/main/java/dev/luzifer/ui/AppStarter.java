@@ -123,8 +123,9 @@ public class AppStarter extends Application {
                 event.consume();
             }
         });
-        
-        imageView.setOnKeyPressed(event -> {
+    
+        javafx.scene.control.ScrollPane scrollPane = new javafx.scene.control.ScrollPane(imageView);
+        scrollPane.setOnKeyPressed(event -> {
             if(event.getCode().isArrowKey()) {
                 if(event.getCode().getName().equals("Right")) {
                     if(indexProperty.get() + 1 >= picturePaths.size())
@@ -140,8 +141,7 @@ public class AppStarter extends Application {
                 imageView.setImage(new Image(picturePaths.get(indexProperty.get())));
             }
         });
-        
-        tab1.setContent(new javafx.scene.control.ScrollPane(imageView));
+        tab1.setContent(scrollPane);
         
         SliderLabelComponent imageSwitchSlider = new SliderLabelComponent("Picture Switch", 1, 60, settings.getImageSwitchInterval());
         SliderLabelComponent frameOpacitySlider = new SliderLabelComponent("Frame Opacity", 0.01, 1, settings.getOpacity());
