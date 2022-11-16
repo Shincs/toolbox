@@ -21,4 +21,3 @@ DEVELOPER NOTES - TODO-LIST
 7. Bilder im Chat
 8. Screencast
 9. "TeamViewer"
-

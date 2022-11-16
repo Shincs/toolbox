@@ -35,13 +35,13 @@ public class Main {
         installUpdater();
         updateIfNeeded();
         
-        fetchUserInformation();
-        showUserInformation();
+        if(fetchUserInformation())
+            showUserInformation();
 
         Application.launch(AppStarter.class, args);
     }
     
-    private static void fetchUserInformation() {
+    private static boolean fetchUserInformation() {
         
         File userFile = new File(APPDATA_FOLDER, "userInformation.txt");
         if(!userFile.exists()) {
@@ -55,14 +55,14 @@ public class Main {
             String content = getGitHubFileContent(USER_INFORMATION_URL);
             try (PrintWriter writer = new PrintWriter(userFile)) {
                 writer.println(content);
+                writer.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             
-            return;
+            return true;
         }
         
-        // Check the contents if they are different
         String content = getGitHubFileContent(USER_INFORMATION_URL);
         try {
             List<String> fileContent = Files.readAllLines(userFile.toPath());
@@ -71,15 +71,21 @@ public class Main {
                 builder.append(line).append("\n");
             
             if(!builder.toString().equals(content)) {
+                // Write the new content
                 try (PrintWriter writer = new PrintWriter(userFile)) {
                     writer.println(content);
+                    writer.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                
+                return true;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        return false;
     }
     
     private static void showUserInformation() {
@@ -121,9 +127,7 @@ public class Main {
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             
             StringBuilder stringBuilder = new StringBuilder();
-            while(bufferedReader.ready()) {
-                stringBuilder.append(bufferedReader.readLine()).append("\n");
-            }
+            bufferedReader.lines().forEach(line -> stringBuilder.append(line).append("\n"));
             
             return stringBuilder.toString();
         } catch (IOException e) {
