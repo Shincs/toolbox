@@ -100,8 +100,10 @@ public class AppStarter extends Application {
         tabPane.setOnMouseClicked(event -> {
             if(event.getButton() == MouseButton.PRIMARY)
                 stage.setOpacity(settings.getOpacity());
-            else
-                stage.setOpacity(0.005);
+            else {
+                setupTray(stage);
+                stage.close();
+            }
         });
         
         tabPane.setOnDragOver(event -> {

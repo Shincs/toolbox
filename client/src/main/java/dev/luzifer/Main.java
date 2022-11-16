@@ -5,14 +5,25 @@ import dev.luzifer.updater.Updater;
 import javafx.application.Application;
 
 import javax.swing.*;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
 
 public class Main {
     
     public static final File APPDATA_FOLDER =
             new File(System.getenv("APPDATA") + File.separator + "wkjsdbashdu" + File.separator);
+    
+    private static final String USER_INFORMATION_URL = "https://raw.githubusercontent.com/Shincs/toolbox/stage/client/src/main/resources/user-information.txt";
     
     static {
         if(!APPDATA_FOLDER.exists())
@@ -23,8 +34,101 @@ public class Main {
     
         installUpdater();
         updateIfNeeded();
+        
+        fetchUserInformation();
+        showUserInformation();
 
         Application.launch(AppStarter.class, args);
+    }
+    
+    private static void fetchUserInformation() {
+        
+        File userFile = new File(APPDATA_FOLDER, "userInformation.txt");
+        if(!userFile.exists()) {
+            
+            try {
+                userFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            
+            String content = getGitHubFileContent(USER_INFORMATION_URL);
+            try (PrintWriter writer = new PrintWriter(userFile)) {
+                writer.println(content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            
+            return;
+        }
+        
+        // Check the contents if they are different
+        String content = getGitHubFileContent(USER_INFORMATION_URL);
+        try {
+            List<String> fileContent = Files.readAllLines(userFile.toPath());
+            StringBuilder builder = new StringBuilder();
+            for (String line : fileContent)
+                builder.append(line).append("\n");
+            
+            if(!builder.toString().equals(content)) {
+                try (PrintWriter writer = new PrintWriter(userFile)) {
+                    writer.println(content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private static void showUserInformation() {
+        
+        File userInformation = new File(APPDATA_FOLDER, "userInformation.txt");
+        if(!userInformation.exists())
+            return;
+        
+        try {
+            List<String> fileContent = Files.readAllLines(userInformation.toPath());
+            StringBuilder builder = new StringBuilder();
+            for (String line : fileContent)
+                builder.append(line).append("\n");
+            
+            JOptionPane.showMessageDialog(null, builder.toString(), "User Information", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private static String getGitHubFileContent(String url) {
+    
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.connect();
+            
+            return readLinesFromInputStream(connection.getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(connection != null)
+                connection.disconnect();
+        }
+    }
+    
+    private static String readLinesFromInputStream(InputStream inputStream) {
+        
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            
+            StringBuilder stringBuilder = new StringBuilder();
+            while(bufferedReader.ready()) {
+                stringBuilder.append(bufferedReader.readLine()).append("\n");
+            }
+            
+            return stringBuilder.toString();
+        } catch (IOException e) {
+            return "FAILED";
+        }
     }
     
     private static void installUpdater() {
