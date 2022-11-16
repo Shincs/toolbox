@@ -27,7 +27,9 @@ public class ChatServer {
             while(true) {
                 
                 Socket client = serverSocket.accept();
-                CLIENTS.add(client);
+                synchronized (CLIENTS) {
+                    CLIENTS.add(client);
+                }
                 
                 System.out.println("Client connected: " + client.getInetAddress().getHostAddress());
                 
@@ -40,7 +42,11 @@ public class ChatServer {
                             
                             if(read == -1) {
                                 
-                                CLIENTS.remove(client);
+                                synchronized (CLIENTS) {
+                                    CLIENTS.remove(client);
+                                }
+                                
+                                client.close();
                                 System.out.println("Client died: " + client.getInetAddress().getHostAddress());
                                 
                                 break;
@@ -57,8 +63,10 @@ public class ChatServer {
                                         continue;
                                     
                                     if(!isAlive(otherClient)) {
-                                        
-                                        iterator.remove();
+    
+                                        synchronized (CLIENTS) {
+                                            iterator.remove();
+                                        }
                                         otherClient.close();
                                         
                                         System.out.println("Client died: " + otherClient.getInetAddress().getHostAddress());
@@ -78,7 +86,12 @@ public class ChatServer {
                                 try {
                                     c.getOutputStream().write(message.getBytes());
                                 } catch (IOException e) {
-                                    e.printStackTrace();
+                                    synchronized (CLIENTS) {
+                                        CLIENTS.remove(c);
+                                    }
+                                    try {
+                                        c.close();
+                                    } catch (IOException ignored) {}
                                 }
                             });
                         }
