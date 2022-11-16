@@ -176,7 +176,7 @@ public class AppStarter extends Application {
         
         stage.setAlwaysOnTop(true);
         stage.setOpacity(settings.getOpacity());
-        setupTray(stage);
+        stage.show();
         
         Thread thread = new Thread(() -> {
             
