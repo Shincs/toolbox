@@ -97,11 +97,6 @@ public class AppStarter extends Application {
         imageView.setFitHeight(500);
         imageView.setFitWidth(500);
         
-        imageView.setOnZoom(e -> {
-            imageView.setFitWidth(imageView.getFitWidth() * e.getZoomFactor());
-            imageView.setFitHeight(imageView.getFitHeight() * e.getZoomFactor());
-        });
-        
         tabPane.setOnMouseClicked(event -> {
             if(event.getButton() == MouseButton.PRIMARY)
                 stage.setOpacity(settings.getOpacity());
@@ -144,8 +139,8 @@ public class AppStarter extends Application {
             }
         });
         
-        tab1.setContent(imageView);
-    
+        tab1.setContent(new javafx.scene.control.ScrollPane(imageView));
+        
         SliderLabelComponent imageSwitchSlider = new SliderLabelComponent("Picture Switch", 1, 60, settings.getImageSwitchInterval());
         SliderLabelComponent frameOpacitySlider = new SliderLabelComponent("Frame Opacity", 0.01, 1, settings.getOpacity());
         CheckBoxLabelComponent switchImages = new CheckBoxLabelComponent("Auto-Switch Images", settings.isSwitchImages());
