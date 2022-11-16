@@ -2,14 +2,14 @@ package dev.luzifer.ui.chat;
 
 import dev.luzifer.chat.ChatController;
 import javafx.application.Platform;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 public class ChatView extends VBox {
 
-    private final TextArea textArea = new TextArea();
+    private final VBox textArea = new VBox();
     private final TextField textField = new TextField();
     
     public ChatView() {
@@ -35,18 +35,21 @@ public class ChatView extends VBox {
                             String ip = args[1];
                             int port = Integer.parseInt(args[2]);
                             
-                            textArea.appendText(">> Connecting to " + ip + ":" + port + "...\n");
+                            textArea.getChildren().add(new Label(">> Connecting to " + ip + ":" + port + "...\n"));
                             ChatController.connect(ip, port).thenAccept(connected -> {
-                                if (Boolean.TRUE.equals(connected)) {
-                                    textArea.appendText(">> Connected!\n");
-                                    ChatController.onMessage(message -> Platform.runLater(() -> textArea.appendText(message + "\n")));
-                                } else {
-                                    textArea.appendText(">> Connection failed!\n");
-                                }
+                                Platform.runLater(() -> {
+                                    if (Boolean.TRUE.equals(connected)) {
+                                        textArea.getChildren().add(new Label(">> Connected!\n"));
+                                        ChatController.onMessage(message -> Platform.runLater(() ->
+                                                textArea.getChildren().add(new Label(message + "\n"))));
+                                    } else {
+                                        textArea.getChildren().add(new Label(">> Connection failed!\n"));
+                                    }
+                                });
                             });
                         }
                     } else {
-                        textArea.appendText("Du bist zu keinem Chat verbunden. \nVerbinde dich mit /connect <host> <port> \n");
+                        textArea.getChildren().add(new Label("Du bist zu keinem Chat verbunden. \nVerbinde dich mit /connect <host> <port> \n"));
                     }
                 } else {
                     ChatController.chat(textField.getText());
@@ -55,10 +58,6 @@ public class ChatView extends VBox {
                 textField.clear();
             }
         });
-        
-        textArea.setPromptText("Noch keine Nachrichten empfangen...");
-        textArea.setWrapText(true);
-        textArea.setEditable(false);
         
         getChildren().addAll(new ScrollPane(textArea), textField);
     }

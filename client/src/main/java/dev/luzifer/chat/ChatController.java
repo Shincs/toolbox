@@ -2,6 +2,7 @@ package dev.luzifer.chat;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Base64;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -72,6 +73,7 @@ public class ChatController {
             while(isAlive) {
                 try {
                     if(socket.getInputStream().available() > 0) {
+                        
                         byte[] buffer = new byte[socket.getInputStream().available()];
                         socket.getInputStream().read(buffer);
                         

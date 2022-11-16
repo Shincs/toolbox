@@ -1,14 +1,12 @@
 package dev.luzifer;
 
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,19 +50,23 @@ public class ChatServer {
                                 
                                 hasSentHeartbeat(client);
                                 
-                                CLIENTS.forEach(c -> {
-                                    if(!isAlive(c)) {
+                                for(Iterator<Socket> iterator = CLIENTS.iterator(); iterator.hasNext();) {
+                                    Socket otherClient = iterator.next();
+                                    
+                                    if(otherClient == client)
+                                        continue;
+                                    
+                                    if(!isAlive(otherClient)) {
                                         
-                                        System.out.println("Client died - no heartbeat: " + c.getInetAddress().getHostAddress());
+                                        iterator.remove();
+                                        otherClient.close();
                                         
-                                        CLIENTS.remove(c);
-                                        try {
-                                            c.close();
-                                        } catch (IOException e) {
-                                            throw new RuntimeException(e);
-                                        }
+                                        System.out.println("Client died: " + otherClient.getInetAddress().getHostAddress());
+                                        continue;
                                     }
-                                });
+                                    
+                                    otherClient.getOutputStream().write(buffer);
+                                }
                                 
                                 continue;
                             }

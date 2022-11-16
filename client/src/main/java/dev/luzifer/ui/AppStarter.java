@@ -17,7 +17,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
@@ -29,8 +28,10 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -40,11 +41,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AppStarter extends Application {
     
     private static final File IMAGE_PATH_STORAGE =
             new File(Main.APPDATA_FOLDER, "image_paths.txt");
+    
+    private static final File SCREENSHOT_FOLDER = new File(Main.APPDATA_FOLDER, "screenshots");
+    
+    static {
+        if(!SCREENSHOT_FOLDER.exists())
+            SCREENSHOT_FOLDER.mkdirs();
+    }
     
     private final List<String> picturePaths = new ArrayList<>();
     
@@ -85,7 +94,8 @@ public class AppStarter extends Application {
         tabPane.setPrefSize(500, 500);
         
         ImageView imageView = new ImageView();
-        ScrollPane scrollPane = new ScrollPane(imageView);
+        imageView.setFitHeight(500);
+        imageView.setFitWidth(500);
         
         imageView.setOnZoom(e -> {
             imageView.setFitWidth(imageView.getFitWidth() * e.getZoomFactor());
@@ -117,7 +127,7 @@ public class AppStarter extends Application {
             }
         });
         
-        scrollPane.setOnKeyPressed(event -> {
+        imageView.setOnKeyPressed(event -> {
             if(event.getCode().isArrowKey()) {
                 if(event.getCode().getName().equals("Right")) {
                     if(indexProperty.get() + 1 >= picturePaths.size())
@@ -134,7 +144,7 @@ public class AppStarter extends Application {
             }
         });
         
-        tab1.setContent(scrollPane);
+        tab1.setContent(imageView);
     
         SliderLabelComponent imageSwitchSlider = new SliderLabelComponent("Picture Switch", 1, 60, settings.getImageSwitchInterval());
         SliderLabelComponent frameOpacitySlider = new SliderLabelComponent("Frame Opacity", 0.01, 1, settings.getOpacity());
@@ -165,7 +175,7 @@ public class AppStarter extends Application {
         
         stage.setAlwaysOnTop(true);
         stage.setOpacity(settings.getOpacity());
-        stage.show();
+        setupTray(stage);
         
         Thread thread = new Thread(() -> {
             
@@ -197,56 +207,81 @@ public class AppStarter extends Application {
         thread.setDaemon(true);
         thread.start();
     
-        stage.setOnCloseRequest(windowEvent -> {
-        
-            if(!SystemTray.isSupported()) {
-                System.out.println("SystemTray is not supported");
-                return;
-            }
-        
-            final PopupMenu popup = new PopupMenu();
-            final TrayIcon trayIcon;
-            java.awt.Image image = new ImageIcon(AppStarter.class.getResource("/icon.png")).getImage();
-            trayIcon = new TrayIcon(image, "oohhh baby a tripleeee");
-            trayIcon.setImageAutoSize(true);
-            final SystemTray tray = SystemTray.getSystemTray();
-        
-            // Create a pop-up menu components
-            MenuItem oeffnenItem = new MenuItem("Öffnen");
-            MenuItem exitItem = new MenuItem("Exit");
-        
-            //Add components to pop-up menu
-            popup.add(oeffnenItem);
-            popup.addSeparator();
-            popup.add(exitItem);
-        
-            trayIcon.addActionListener(event -> {
-                Platform.runLater(() -> {
-                    tray.remove(trayIcon);
-                    stage.show();
-                });
-            });
-            
-            trayIcon.setPopupMenu(popup);
-        
-            try {
-                tray.add(trayIcon);
-            } catch (AWTException e) {
-                System.out.println("TrayIcon could not be added.");
-            }
-        
-            exitItem.addActionListener(e -> {
-                System.out.println("Exiting...");
-                System.exit(0);
-            });
-            
-            oeffnenItem.addActionListener(e -> {
-                Platform.runLater(() -> {
-                    tray.remove(trayIcon);
-                    stage.show();
-                });
+        stage.setOnCloseRequest(windowEvent -> setupTray(stage));
+    }
+    
+    private void setupTray(Stage stage) {
+    
+        if(!SystemTray.isSupported()) {
+            System.out.println("SystemTray is not supported");
+            return;
+        }
+    
+        final PopupMenu popup = new PopupMenu();
+        final TrayIcon trayIcon;
+        java.awt.Image image = new ImageIcon(AppStarter.class.getResource("/icon.png")).getImage();
+        trayIcon = new TrayIcon(image, "oohhh baby a tripleeee");
+        trayIcon.setImageAutoSize(true);
+        final SystemTray tray = SystemTray.getSystemTray();
+    
+        // Create a pop-up menu components
+        MenuItem oeffnenItem = new MenuItem("Öffnen");
+        MenuItem screenshotItem = new MenuItem("Screenshot");
+        MenuItem exitItem = new MenuItem("Exit");
+    
+        //Add components to pop-up menu
+        popup.add(oeffnenItem);
+        popup.add(screenshotItem);
+        popup.addSeparator();
+        popup.add(exitItem);
+    
+        trayIcon.addActionListener(event -> {
+            Platform.runLater(() -> {
+                tray.remove(trayIcon);
+                stage.show();
             });
         });
+    
+        trayIcon.setPopupMenu(popup);
+    
+        try {
+            tray.add(trayIcon);
+        } catch (AWTException e) {
+            System.out.println("TrayIcon could not be added.");
+        }
+    
+        exitItem.addActionListener(e -> {
+            System.out.println("Exiting...");
+            System.exit(0);
+        });
+    
+        oeffnenItem.addActionListener(e -> {
+            Platform.runLater(() -> {
+                tray.remove(trayIcon);
+                stage.show();
+            });
+        });
+    
+        screenshotItem.addActionListener(e -> {
+            Platform.runLater(() -> takeScreenshot());
+        });
+    }
+    
+    private void takeScreenshot() {
+        try {
+            
+            Robot robot = new Robot();
+            
+            Rectangle rectangle = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+            BufferedImage image = robot.createScreenCapture(rectangle);
+            
+            File file = new File(SCREENSHOT_FOLDER, UUID.randomUUID() + ".png");
+            ImageIO.write(image, "png", file);
+
+            file.createNewFile();
+        } catch (AWTException | IOException e) {
+            e.printStackTrace();
+        }
     }
     
     private void addImagePath(String path) {

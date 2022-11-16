@@ -2,35 +2,51 @@ package dev.luzifer;
 
 import dev.luzifer.updater.Updater;
 
+import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 
 public class Main {
     
     public static void main(String[] args) {
+    
+        JFrame frame = new JFrame("Updater");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 400);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        
+        JLabel label = new JLabel("Checking for updates...");
+        frame.add(label);
         
         if(args.length == 0) {
-            System.out.println("Usage: java -jar updater.jar -spickerLocation=<path to jar>");
+            label.setText("Usage: java -jar updater.jar -spickerLocation=<path to jar>");
             return;
         }
         
         for(String arg : args) {
             if(arg.startsWith("-spickerLocation=")) {
                 
-                System.out.println("Found spicker location: " + arg.substring(17));
+                label.setText("Found spicker location: " + arg.substring(17));
                 
                 String spickerLocation = arg.substring("-spickerLocation=".length());
                 File spicker = new File(spickerLocation);
                 
                 if(!spicker.exists()) {
-                    System.out.println("Spicker not found at " + spicker.getAbsolutePath());
+                    label.setText("Spicker not found at " + spickerLocation);
                     return;
                 }
                 
-                System.out.println("Updating spicker...");
-                
+                label.setText("Updating spicker...");
                 Updater.update(spicker, Updater.DOWNLOAD_URL);
-                System.out.println("Update complete!");
-                
+                label.setText("Update complete!");
+    
+                try {
+                    Runtime.getRuntime().exec("java -jar " + spicker.getAbsolutePath());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+    
                 return;
             }
         }
