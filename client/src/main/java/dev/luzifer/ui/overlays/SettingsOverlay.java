@@ -32,9 +32,7 @@ public class SettingsOverlay extends StackPane implements Initializable {
         
         saveButton.setOnAction(event -> {
             
-            Settings.settings = Settings.of(
-                    frameOpacitySlider.getSlider().getValue() > 0.99 ? 1 : (int) frameOpacitySlider.getSlider().getValue()
-            );
+            Settings.settings = Settings.of(frameOpacitySlider.getSlider().getValue());
             Settings.save();
         });
         
