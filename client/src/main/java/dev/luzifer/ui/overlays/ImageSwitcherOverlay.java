@@ -32,27 +32,6 @@ public class ImageSwitcherOverlay extends StackPane implements Initializable {
     private static final List<String> PICTURE_PATHS = new ArrayList<>();
     private static final IntegerProperty INDEX_PROPERTY = new SimpleIntegerProperty(0);
     
-    static {
-        Thread thread = new Thread(() -> {
-        
-            while (true) {
-            
-                try {
-                    Thread.sleep(1000L * Settings.settings.getImageSwitchInterval());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            
-                if(Settings.settings.isSwitchImages()) {
-                    if(INDEX_PROPERTY.add(1).get() >= PICTURE_PATHS.size()-1)
-                        INDEX_PROPERTY.set(0);
-                }
-            }
-        });
-        thread.setDaemon(true);
-        thread.start();
-    }
-    
     private static void addImagePath(String path) {
         
         PICTURE_PATHS.add(path);

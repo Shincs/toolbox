@@ -1,7 +1,6 @@
 package dev.luzifer.ui.overlays;
 
 import dev.luzifer.settings.Settings;
-import dev.luzifer.ui.component.CheckBoxLabelComponent;
 import dev.luzifer.ui.component.SliderLabelComponent;
 import dev.luzifer.ui.util.FXMLUtil;
 import javafx.fxml.FXML;
@@ -28,23 +27,17 @@ public class SettingsOverlay extends StackPane implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         
-        SliderLabelComponent imageSwitchSlider =
-                new SliderLabelComponent("Picture Switch", 1, 60, Settings.settings.getImageSwitchInterval());
         SliderLabelComponent frameOpacitySlider =
                 new SliderLabelComponent("Frame Opacity", 0.01, 1, Settings.settings.getOpacity());
-        CheckBoxLabelComponent switchImages =
-                new CheckBoxLabelComponent("Auto-Switch Images", Settings.settings.isSwitchImages());
         
         saveButton.setOnAction(event -> {
             
             Settings.settings = Settings.of(
-                    imageSwitchSlider.getSlider().getValue(),
-                    frameOpacitySlider.getSlider().getValue() > 0.99 ? 1 : (int) frameOpacitySlider.getSlider().getValue(),
-                    switchImages.getCheckBox().isSelected()
+                    frameOpacitySlider.getSlider().getValue() > 0.99 ? 1 : (int) frameOpacitySlider.getSlider().getValue()
             );
             Settings.save();
         });
         
-        settingsFlowPane.getChildren().addAll(imageSwitchSlider, frameOpacitySlider, switchImages);
+        settingsFlowPane.getChildren().addAll(frameOpacitySlider);
     }
 }
