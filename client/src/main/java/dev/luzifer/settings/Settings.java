@@ -4,6 +4,8 @@ public class Settings {
     
     public static final Settings DEFAULT_SETTINGS = new Settings(1, 10, true);
     
+    public static volatile Settings settings; // TODO: static abuse
+    
     public static Settings of(double opacity, int imageSwitchInterval, boolean switchImages) {
         return new Settings(opacity, imageSwitchInterval, switchImages);
     }
