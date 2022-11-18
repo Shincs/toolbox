@@ -12,7 +12,7 @@ public class Main {
     
         JFrame frame = new JFrame("Updater");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 400);
+        frame.setSize(400, 100);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         
