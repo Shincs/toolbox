@@ -51,7 +51,7 @@ public class AppStarter extends Application {
         });
     
         Platform.setImplicitExit(false);
-        Settings.settings = loadSettings();
+        Settings.settings = Settings.load();
     
         stage.setAlwaysOnTop(true);
         stage.setOpacity(Settings.settings.getOpacity());
@@ -128,44 +128,6 @@ public class AppStarter extends Application {
             
             file.createNewFile();
         } catch (AWTException | IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    private Settings loadSettings() {
-        
-        File settingsFile = new File(Main.APPDATA_FOLDER, "settings.json");
-        if(!settingsFile.exists()) {
-            
-            Settings.settings = Settings.DEFAULT_SETTINGS;
-            saveSettings();
-            
-            return Settings.settings;
-        }
-        
-        try(BufferedReader reader = new BufferedReader(new FileReader(settingsFile))) {
-            Settings.settings = new Gson().fromJson(reader, Settings.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        return Settings.settings;
-    }
-    
-    private void saveSettings() {
-        
-        File settingsFile = new File(Main.APPDATA_FOLDER, "settings.json");
-        if(!settingsFile.exists()) {
-            try {
-                settingsFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(settingsFile))) {
-            writer.write(new Gson().toJson(Settings.settings));
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }
