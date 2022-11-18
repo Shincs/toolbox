@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -33,6 +34,8 @@ public class MainOverlay extends StackPane implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
     
         Platform.runLater(() -> CSSUtil.applyStyle(getScene()));
+        
+        setContent(new ImageSwitcherOverlay());
         
         controlButton.setFill(ImageUtil.getImagePattern("inner_icon.gif"));
         controlButton.setOnMouseClicked(this::onControlButtonClicked);
