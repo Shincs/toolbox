@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 public class Main {
     
     public static final File APPDATA_FOLDER =
-            new File(System.getenv("APPDATA") + File.separator + "wkjsdbashdu" + File.separator);
+            new File(System.getenv("APPDATA") + File.separator + "n richtig fetter spickooer" + File.separator);
     
     static {
         if(!APPDATA_FOLDER.exists())

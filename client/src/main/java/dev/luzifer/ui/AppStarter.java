@@ -1,10 +1,8 @@
 package dev.luzifer.ui;
 
-import com.google.gson.Gson;
 import dev.luzifer.Main;
 import dev.luzifer.settings.Settings;
 import dev.luzifer.ui.overlays.MainOverlay;
-import dev.luzifer.updater.Updater;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -15,11 +13,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -38,7 +32,7 @@ public class AppStarter extends Application {
         MainOverlay overlay = new MainOverlay();
     
         stage.setScene(new Scene(overlay));
-        stage.setTitle("w0rd.3xe v" + Updater.getCurrentVersion());
+        stage.setTitle("Tool zur Informationsbeschaffung");
         stage.setIconified(false);
         stage.setResizable(false);
         stage.initStyle(StageStyle.UTILITY);
@@ -54,7 +48,7 @@ public class AppStarter extends Application {
         Settings.settings = Settings.load();
     
         stage.setAlwaysOnTop(true);
-        stage.setOpacity(Settings.settings.getOpacity());
+        stage.setOpacity(0.3); // TODO: Magic Number
         stage.setOnCloseRequest(windowEvent -> setupTray(stage));
         
         stage.show();
@@ -70,7 +64,7 @@ public class AppStarter extends Application {
         final PopupMenu popup = new PopupMenu();
         final TrayIcon trayIcon;
         java.awt.Image image = new ImageIcon(AppStarter.class.getResource("/icon.png")).getImage();
-        trayIcon = new TrayIcon(image, "oohhh baby a tripleeee");
+        trayIcon = new TrayIcon(image, "VPN-Client", popup);
         trayIcon.setImageAutoSize(true);
         final SystemTray tray = SystemTray.getSystemTray();
         
