@@ -14,7 +14,7 @@ public class Settings {
     
     public static final Settings DEFAULT_SETTINGS = new Settings(1);
     
-    public static volatile Settings settings; // TODO: static abuse
+    public static volatile Settings settings;
     
     public static Settings of(double opacity) {
         return new Settings(opacity);

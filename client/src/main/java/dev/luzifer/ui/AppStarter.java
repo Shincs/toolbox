@@ -48,7 +48,7 @@ public class AppStarter extends Application {
         Settings.settings = Settings.load();
     
         stage.setAlwaysOnTop(true);
-        stage.setOpacity(0.3); // TODO: Magic Number
+        stage.setOpacity(0.3);
         stage.setOnCloseRequest(windowEvent -> setupTray(stage));
         
         stage.show();
@@ -97,16 +97,12 @@ public class AppStarter extends Application {
             System.exit(0);
         });
         
-        oeffnenItem.addActionListener(e -> {
-            Platform.runLater(() -> {
-                tray.remove(trayIcon);
-                stage.show();
-            });
-        });
+        oeffnenItem.addActionListener(e -> Platform.runLater(() -> {
+            tray.remove(trayIcon);
+            stage.show();
+        }));
         
-        screenshotItem.addActionListener(e -> {
-            Platform.runLater(() -> takeScreenshot());
-        });
+        screenshotItem.addActionListener(e -> Platform.runLater(this::takeScreenshot));
     }
     
     private void takeScreenshot() {

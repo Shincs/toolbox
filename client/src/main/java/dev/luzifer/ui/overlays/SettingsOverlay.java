@@ -31,7 +31,6 @@ public class SettingsOverlay extends StackPane implements Initializable {
                 new SliderLabelComponent("Frame Opacity", 0.01, 1, Settings.settings.getOpacity());
         
         saveButton.setOnAction(event -> {
-            
             Settings.settings = Settings.of(frameOpacitySlider.getSlider().getValue());
             Settings.save();
         });
