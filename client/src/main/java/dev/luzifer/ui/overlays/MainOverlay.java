@@ -36,6 +36,8 @@ public class MainOverlay extends StackPane implements Initializable {
         Platform.runLater(() -> {
             CSSUtil.applyStyle(getScene());
             controlButton.setOpacity(Settings.settings.getOpacity());
+            
+            moveWindowOnDrag();
         });
         
         setContent(new ChatGPTOverlay(() -> setContent(new BrowserOverlay())));
@@ -68,5 +70,14 @@ public class MainOverlay extends StackPane implements Initializable {
         
         contextMenu.getItems().addAll(browser, chat, exit);
         contextMenu.show(controlButton, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+    }
+    
+    private void moveWindowOnDrag() {
+        getScene().setOnMouseDragged(mouseEvent -> {
+            if(mouseEvent.isPrimaryButtonDown()) {
+                getScene().getWindow().setX(mouseEvent.getScreenX() - getScene().getWindow().getWidth() / 2);
+                getScene().getWindow().setY(mouseEvent.getScreenY() - getScene().getWindow().getHeight() / 2);
+            }
+        });
     }
 }
