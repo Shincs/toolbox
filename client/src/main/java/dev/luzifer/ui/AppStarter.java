@@ -48,7 +48,7 @@ public class AppStarter extends Application {
         Settings.settings = Settings.load();
     
         stage.setAlwaysOnTop(true);
-        stage.setOpacity(0.3);
+        stage.setOpacity(Settings.settings.getOpacity());
         stage.setOnCloseRequest(windowEvent -> setupTray(stage));
         
         stage.show();

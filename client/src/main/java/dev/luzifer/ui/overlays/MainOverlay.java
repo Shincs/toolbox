@@ -1,5 +1,6 @@
 package dev.luzifer.ui.overlays;
 
+import dev.luzifer.settings.Settings;
 import dev.luzifer.ui.util.CSSUtil;
 import dev.luzifer.ui.util.FXMLUtil;
 import dev.luzifer.ui.util.ImageUtil;
@@ -32,9 +33,12 @@ public class MainOverlay extends StackPane implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
     
-        Platform.runLater(() -> CSSUtil.applyStyle(getScene()));
+        Platform.runLater(() -> {
+            CSSUtil.applyStyle(getScene());
+            controlButton.setOpacity(Settings.settings.getOpacity());
+        });
         
-        setContent(new ImageSwitcherOverlay());
+        setContent(new ChatGPTOverlay(() -> setContent(new BrowserOverlay())));
         
         controlButton.setFill(ImageUtil.getImagePattern("inner_icon.gif"));
         controlButton.setOnMouseClicked(this::onControlButtonClicked);
@@ -51,23 +55,18 @@ public class MainOverlay extends StackPane implements Initializable {
                 .addListener((observableValue, aBoolean, t1) -> {
             if(!t1) contextMenu.hide();
         });
-    
-        MenuItem imageSwitcher = new MenuItem("Image Switcher");
-        imageSwitcher.setOnAction(event -> setContent(new ImageSwitcherOverlay()));
+        
         
         MenuItem browser = new MenuItem("Browser");
         browser.setOnAction(event -> setContent(new BrowserOverlay()));
         
-        MenuItem chat = new MenuItem("Chat [WiP]");
-        chat.setOnAction(event -> setContent(new ChatOverlay()));
-        
-        MenuItem settings = new MenuItem("Settings [WiP]");
-        settings.setOnAction(event -> setContent(new SettingsOverlay()));
+        MenuItem chat = new MenuItem("Chat");
+        chat.setOnAction(event -> setContent(new ChatGPTOverlay(() -> setContent(new BrowserOverlay()))));
         
         MenuItem exit = new MenuItem("Exit");
         exit.setOnAction(event -> System.exit(0));
         
-        contextMenu.getItems().addAll(imageSwitcher, browser, chat, settings, exit);
+        contextMenu.getItems().addAll(browser, chat, exit);
         contextMenu.show(controlButton, mouseEvent.getScreenX(), mouseEvent.getScreenY());
     }
 }
