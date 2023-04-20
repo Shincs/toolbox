@@ -33,9 +33,9 @@ public class AppStarter extends Application {
     
         stage.setScene(new Scene(overlay));
         stage.setTitle("Tool zur Informationsbeschaffung");
-        stage.setIconified(false);
+        stage.initStyle(StageStyle.UTILITY);
         stage.setResizable(false);
-        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setIconified(false);
         
         stage.getScene().setOnMouseClicked(event -> {
             if(event.getButton().name().equals("SECONDARY")) {
