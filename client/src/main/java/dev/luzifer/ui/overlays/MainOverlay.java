@@ -46,9 +46,9 @@ public class MainOverlay extends StackPane implements Initializable {
             // increase opacity on ctrl and +
             getScene().setOnKeyPressed(keyEvent -> {
                 if(keyEvent.isControlDown() && keyEvent.getCode().getName().equals("Plus")) {
-                    stage.setOpacity(stage.getOpacity() + 0.01);
+                    stage.setOpacity(Math.min(1.0, stage.getOpacity() + 0.01));
                 } else if(keyEvent.isControlDown() && keyEvent.getCode().getName().equals("Minus")) {
-                    stage.setOpacity(stage.getOpacity() - 0.01);
+                    stage.setOpacity(Math.max(0.01, stage.getOpacity() - 0.01));
                 }
             });
         });

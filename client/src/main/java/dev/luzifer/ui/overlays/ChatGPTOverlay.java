@@ -37,10 +37,12 @@ public class ChatGPTOverlay extends VBox {
         conversationArea.setPrefHeight(300);
         conversationArea.setWrapText(true);
         conversationArea.setFocusTraversable(false);
+        conversationArea.setStyle("-fx-border-color: transparent; -fx-background-color: transparent; -fx-focus-color: transparent;");
         
         // Create TextField for user input
         TextField inputField = new TextField();
         inputField.setFocusTraversable(false);
+        inputField.setStyle("-fx-border-color: transparent; -fx-focus-color: transparent;");
         inputField.setOnAction(event -> {
             String userInput = inputField.getText();
             
