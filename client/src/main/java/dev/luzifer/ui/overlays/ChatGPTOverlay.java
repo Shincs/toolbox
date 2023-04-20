@@ -36,9 +36,11 @@ public class ChatGPTOverlay extends VBox {
         conversationArea.setEditable(false);
         conversationArea.setPrefHeight(300);
         conversationArea.setWrapText(true);
+        conversationArea.setFocusTraversable(false);
         
         // Create TextField for user input
         TextField inputField = new TextField();
+        inputField.setFocusTraversable(false);
         inputField.setOnAction(event -> {
             String userInput = inputField.getText();
             

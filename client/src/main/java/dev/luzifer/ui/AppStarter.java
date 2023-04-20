@@ -29,7 +29,7 @@ public class AppStarter extends Application {
     @Override
     public void start(Stage stage) {
     
-        MainOverlay overlay = new MainOverlay();
+        MainOverlay overlay = new MainOverlay(stage);
     
         stage.setScene(new Scene(overlay));
         stage.setTitle("Tool zur Informationsbeschaffung");
@@ -45,7 +45,7 @@ public class AppStarter extends Application {
         });
     
         Platform.setImplicitExit(false);
-        Settings.settings = Settings.load();
+        Settings.settings = Settings.DEFAULT_SETTINGS;
     
         stage.setAlwaysOnTop(true);
         stage.setOpacity(Settings.settings.getOpacity());

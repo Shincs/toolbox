@@ -14,11 +14,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MainOverlay extends StackPane implements Initializable {
+    
+    private final Stage stage;
     
     @FXML
     private Circle controlButton;
@@ -26,7 +29,8 @@ public class MainOverlay extends StackPane implements Initializable {
     @FXML
     private AnchorPane contentHolder;
     
-    public MainOverlay() {
+    public MainOverlay(Stage stage) {
+        this.stage = stage;
         FXMLUtil.loadFXML(this);
     }
     
@@ -38,6 +42,15 @@ public class MainOverlay extends StackPane implements Initializable {
             controlButton.setOpacity(Settings.settings.getOpacity());
             
             moveWindowOnDrag();
+            
+            // increase opacity on ctrl and +
+            getScene().setOnKeyPressed(keyEvent -> {
+                if(keyEvent.isControlDown() && keyEvent.getCode().getName().equals("Plus")) {
+                    stage.setOpacity(stage.getOpacity() + 0.01);
+                } else if(keyEvent.isControlDown() && keyEvent.getCode().getName().equals("Minus")) {
+                    stage.setOpacity(stage.getOpacity() - 0.01);
+                }
+            });
         });
         
         setContent(new ChatGPTOverlay(() -> setContent(new BrowserOverlay())));

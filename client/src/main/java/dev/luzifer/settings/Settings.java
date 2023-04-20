@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class Settings {
     
-    public static final Settings DEFAULT_SETTINGS = new Settings(0.1);
+    public static final Settings DEFAULT_SETTINGS = new Settings(0.05);
     
     public static volatile Settings settings;
     
