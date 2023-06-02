@@ -6,7 +6,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ChromeBite extends BorderPane {
+    
+    private static final Map<String, String> AUTOCOMPLETE_MAP = new HashMap<>();
+    
+    static {
+        AUTOCOMPLETE_MAP.put("google", "google.com");
+        AUTOCOMPLETE_MAP.put("moodle", "moodle.oszimt.de");
+        AUTOCOMPLETE_MAP.put("chat", "chat.openai.com");
+    }
     
     private final WebEngine webEngine;
     
@@ -17,6 +28,7 @@ public class ChromeBite extends BorderPane {
         webView.setPrefWidth(500);
         
         TextField searchField = new TextField();
+        autocomplete(searchField);
         searchField.setOnAction(event -> validateURL(searchField.getText()));
         
         setTop(searchField);
@@ -45,5 +57,17 @@ public class ChromeBite extends BorderPane {
             loadURL("https://" + url);
         else
             loadURL(url);
+    }
+    
+    private void autocomplete(TextField searchField) {
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            String[] parts = newValue.split(" ");
+            String lastPart = parts[parts.length - 1];
+            
+            if (AUTOCOMPLETE_MAP.containsKey(lastPart)) {
+                String autocomplete = AUTOCOMPLETE_MAP.get(lastPart);
+                searchField.setText(newValue.replace(lastPart, autocomplete));
+            }
+        });
     }
 }
