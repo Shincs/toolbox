@@ -28,6 +28,7 @@ public class ChromeBite extends BorderPane {
         webView.setPrefWidth(500);
         
         TextField searchField = new TextField();
+        searchField.setStyle("-fx-background-color: #f2f2f2; -fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #e6e6e6; -fx-border-width: 1;");
         autocomplete(searchField);
         searchField.setOnAction(event -> validateURL(searchField.getText()));
         
